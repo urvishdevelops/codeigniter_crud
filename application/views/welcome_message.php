@@ -16,7 +16,7 @@
 
 			<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
 				<div class="navbar-nav">
-					<a class="nav-link text-light" href="#">Products</a>
+					<a class="nav-link text-light" href="#">Author</a>
 				</div>
 			</div>
 		</div>
@@ -43,9 +43,15 @@
 					</div>
 
 					<div class="mb-3">
+						<label for="image">Image</label>
+						<input type="file" class="form-control" name="image" id="image" placeholder="Enter Image">
+					</div>
+
+					<div class="mb-3">
 						<button type="submit" class="btn btn-primary mt-3" id="submit"
 							value="Add Student">Submit</button>
 					</div>
+
 				</form>
 			</div>
 			<span id="output"></span>
@@ -60,6 +66,7 @@
 					<th>Sr.no</th>
 					<th>Name</th>
 					<th>Course</th>
+					<th>email</th>
 					<th>Image</th>
 					<th>Action</th>
 				</tr>
@@ -83,10 +90,10 @@
 				contentType: false,
 				cache: false,
 				success: function (data) {
-
+					table.ajax.reload();
 					$('#output').text(data)
 					$('#my-form')[0].reset();
-
+					$('#hidden_id').val('');
 				},
 			})
 		})
@@ -122,7 +129,25 @@
 
 		$(document).on('click', '.edit', function () {
 			let editId = this.getAttribute('id');
-		
+			$.ajax({
+				type: "POST",
+				url: 'http://localhost:8000/welcome/edit',
+				data: {
+					'editId': editId,
+				},
+				success: function (data) {
+					let editdata = JSON.parse(data);
+
+					let finalEditData = editdata[0]
+
+					$('#hidden_id').val(finalEditData.id);
+					$('#name').val(finalEditData.name);
+					$('#book').val(finalEditData.book);
+					$('#email').val(finalEditData.email);
+
+
+				},
+			})
 		})
 
 
@@ -131,15 +156,15 @@
 			$.ajax({
 				type: "POST",
 				url: 'http://localhost:8000/welcome/delete',
-				data: deleteId,
+				data: {
+					'deleteId': deleteId,
+				},
 				success: function (data) {
 					$('#output').text(data)
-					$('#my-form')[0].reset();
+					table.ajax.reload();
 				},
 			})
 		})
-
-
 	})
 </script>
 

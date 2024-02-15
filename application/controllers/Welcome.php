@@ -7,65 +7,93 @@ class Welcome extends CI_Controller
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->database(); // Load the database library
+		$this->load->database();
 	}
 	public function index()
 	{
 		$this->load->view('welcome_message');
+		$this->load->model('AuthorModel');
 	}
+
+	// public function insert()
+	// {
+
+	// 	$this->load->view('imageupload_form');
+	// }
 	public function insert()
 	{
-		$data = array(
-			'name' => $this->input->post('name'),
-			'book' => $this->input->post('book'),
-			'email' => $this->input->post('email'),
-		);
+		$this->load->model('AuthorModel');
+		// created config
+		$config = [
+			'upload_path' => './uploads/',
+			'allowed_types' => 'jpg|jpeg|png'
+		];
 
-		$this->db->insert('authors', $data);
+		// used library function 
+		$this->load->library('upload', $config);
 
-		if ($this->db->affected_rows() > 0) {
-			echo "Inserted";
+
+
+		if (!$this->upload->do_upload('image')) {
+
+			isset($_FILES['image']);
 		} else {
-			echo "Issue in db configration";
+			$uploaddata = $this->upload->data();
+
+			$filename = $uploaddata['file_name'];
+
+			$data = array(
+				'name' => $this->input->post('name'),
+				'book' => $this->input->post('book'),
+				'email' => $this->input->post('email'),
+				'image' => $filename
+			);
+
+			$hidden_id = $this->input->post('hidden_id');
+
+
+			if (!$hidden_id) {
+				$this->AuthorModel->insert($data);
+			} else {
+				$this->AuthorModel->update($data, $hidden_id);
+			}
 		}
+
+
+
+
 	}
+
 	public function listing()
 	{
+		$this->load->model('AuthorModel');
 
 		$modelData = $this->db->query('SELECT * FROM authors');
 		$data = $modelData->result_array();
 
-		$tbody = [];
+		$this->AuthorModel->listing($data);
+	}
 
+	public function edit()
+	{
+		$data = $this->input->post();
 
-		foreach ($data as $value) {
+		$editId = $data['editId'];
 
-			$tbody[] = [
-				'id' => $value['id'],
-				'name' => $value['name'],
-				'book' => $value['book'],
-				'email' => $value['email'],
-				'action' => '<button id="' . $value['id'] . '" class="btn btn-warning edit">Edit</button> | <button id="' . $value['id'] . '" class="btn btn-danger delete">Delete</button>',
-			];
-		}
+		$modelData = $this->db->query("SELECT * FROM authors where id='$editId';");
+		$data = $modelData->result_array();
 
-		$output = ['data' => $tbody];
-		echo json_encode($output);
-
+		echo json_encode($data);
 	}
 	public function delete()
 	{
-		$deleteId = $this->post('deleteId');
+		$this->load->model('AuthorModel');
 
-		echo '<pre>';
-		print_r($deleteId);
-		die;
+		$data = $this->input->post();
 
-		// $this->db->where('id', $id);
-		// $this->db->delete('user');
+		$deleteId = $data['deleteId'];
 
-		// echo json_encode($output);
+		$this->AuthorModel->delete($deleteId);
 
 	}
 }
-
