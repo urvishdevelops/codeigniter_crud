@@ -43,6 +43,7 @@ class AuthorModel extends CI_Model
                 'name' => $value['name'],
                 'book' => $value['book'],
                 'email' => $value['email'],
+                'image' => '<img src="' . 'uploads/' . $value['image']. '" alt="Not Found!" style="max-height: 50px;">',
                 'action' => '<button id="' . $value['id'] . '" class="btn btn-warning edit">Edit</button> | <button id="' . $value['id'] . '" class="btn btn-danger delete">Delete</button>',
             ];
         }

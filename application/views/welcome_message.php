@@ -120,6 +120,9 @@
 				data: 'email'
 			},
 			{
+				data: 'image'
+			},
+			{
 				data: 'action'
 			},
 			]

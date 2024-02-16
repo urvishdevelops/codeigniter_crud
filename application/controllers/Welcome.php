@@ -15,11 +15,6 @@ class Welcome extends CI_Controller
 		$this->load->model('AuthorModel');
 	}
 
-	// public function insert()
-	// {
-
-	// 	$this->load->view('imageupload_form');
-	// }
 	public function insert()
 	{
 		$this->load->model('AuthorModel');
@@ -39,9 +34,9 @@ class Welcome extends CI_Controller
 			isset($_FILES['image']);
 		} else {
 			$uploaddata = $this->upload->data();
-
 			$filename = $uploaddata['file_name'];
 
+			
 			$data = array(
 				'name' => $this->input->post('name'),
 				'book' => $this->input->post('book'),
